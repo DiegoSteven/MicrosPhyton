@@ -19,7 +19,8 @@ def crear_producto(data):
     producto = Producto(
         nombre=data['nombre'],
         precio=data['precio'],
-        stock=data['stock']
+        stock=data['stock'],
+        imagen_url=data.get('imagen_url', '') 
     )
     db.session.add(producto)
     db.session.commit()

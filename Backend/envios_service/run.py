@@ -5,4 +5,4 @@ if __name__ == '__main__':
     with app.app_context():
         db.init_app(app)
         db.create_all()
-    app.run(port=8088, debug=True)
+    app.run(port=5008, debug=True)

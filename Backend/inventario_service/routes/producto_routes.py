@@ -3,6 +3,7 @@ from services.inventario_service import crear_producto, obtener_productos, obten
 
 producto_bp = Blueprint('productos', __name__)
 
+
 @producto_bp.route('/productos', methods=['POST'])
 def crear():
     data = request.get_json()
@@ -11,8 +12,10 @@ def crear():
         'id': producto.id,
         'nombre': producto.nombre,
         'precio': producto.precio,
-        'stock': producto.stock
+        'stock': producto.stock,
+        'imagen_url': producto.imagen_url
     }), 201
+
 
 @producto_bp.route('/productos', methods=['GET'])
 def listar():
@@ -22,9 +25,11 @@ def listar():
             'id': p.id,
             'nombre': p.nombre,
             'precio': p.precio,
-            'stock': p.stock
+            'stock': p.stock,
+            'imagen_url': p.imagen_url
         } for p in productos
     ])
+
 
 @producto_bp.route('/productos/<int:id>', methods=['GET'])
 def obtener(id):
@@ -34,6 +39,8 @@ def obtener(id):
             'id': producto.id,
             'nombre': producto.nombre,
             'precio': producto.precio,
-            'stock': producto.stock
+            'stock': producto.stock,
+            'image': producto.image,
+            'imagen_url': producto.imagen_url
         })
     return jsonify({'error': 'Producto no encontrado'}), 404

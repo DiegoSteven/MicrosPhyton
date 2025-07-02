@@ -1,6 +1,6 @@
 // Funciones para consumir la API de envíos
 
-const API_URL = 'http://localhost:8088/api/envios';
+const API_URL = 'http://localhost:5008/api/envios';
 
 export async function listarEnvios() {
   const res = await fetch(API_URL);
