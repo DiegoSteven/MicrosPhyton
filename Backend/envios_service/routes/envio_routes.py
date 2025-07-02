@@ -24,16 +24,23 @@ def obtener_envio(id):
 @envio_bp.route('', methods=['POST'])
 def crear_envio():
     data = request.get_json()
+
+    # Validación de campos requeridos
+    campos = ['idDespacho', 'nombreDestinatario', 'direccionEntrega', 'telefono', 'ciudad']
+    if not all(k in data for k in campos):
+        return jsonify({'error': 'Faltan campos obligatorios'}), 400
+
     envio = Envio(
         idDespacho=data['idDespacho'],
-        transportista=data['transportista'],
-        guiaSeguimiento=data['guiaSeguimiento'],
+        nombreDestinatario=data['nombreDestinatario'],
+        direccionEntrega=data['direccionEntrega'],
+        telefono=data['telefono'],
+        ciudad=data['ciudad'],
         estado='EnTransito'
     )
     db.session.add(envio)
     db.session.commit()
     return jsonify(envio.to_dict()), 201
-
 
 # ✅ Eliminar (lógico)
 @envio_bp.route('/<int:id>', methods=['DELETE'])

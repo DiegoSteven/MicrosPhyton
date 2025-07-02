@@ -4,9 +4,11 @@ db = SQLAlchemy()
 
 class Envio(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    idDespacho = db.Column(db.Integer, nullable=False)
-    transportista = db.Column(db.String(50), nullable=False)
-    guiaSeguimiento = db.Column(db.String(100), nullable=False)
+    idDespacho = db.Column(db.Integer, nullable=False)  
+    nombreDestinatario = db.Column(db.String(100), nullable=False)
+    direccionEntrega = db.Column(db.String(200), nullable=False)
+    telefono = db.Column(db.String(20), nullable=False)
+    ciudad = db.Column(db.String(50), nullable=False)
     estado = db.Column(db.String(20), nullable=False, default='EnTransito')
 
     def cambiar_estado(self, nuevo_estado):
@@ -35,12 +37,15 @@ class Envio(db.Model):
         self.estado = 'Cancelado'
         return True
 
+
     def to_dict(self):
         return {
             'id': self.id,
             'idDespacho': self.idDespacho,
-            'transportista': self.transportista,
-            'guiaSeguimiento': self.guiaSeguimiento,
+            'nombreDestinatario': self.nombreDestinatario,
+            'direccionEntrega': self.direccionEntrega,
+            'telefono': self.telefono,
+            'ciudad': self.ciudad,
             'estado': self.estado
         }
 
