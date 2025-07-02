@@ -36,3 +36,11 @@ export async function crearProducto(
   if (!res.ok) throw new Error("Error al crear producto");
   return res.json();
 }
+
+export async function obtenerProductoPorId(id: number) {
+  const res = await fetch(`http://localhost:5003/productos/${id}`, {
+    cache: 'no-store',
+  });
+  if (!res.ok) throw new Error('Error al obtener producto');
+  return res.json();
+}

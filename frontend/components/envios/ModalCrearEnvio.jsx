@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { obtenerDespachos } from "@/app/api/despachos/despachos_api";
 
 export default function ModalCrearEnvio({ open, onClose, onSubmit }) {
   const [form, setForm] = useState({
@@ -17,9 +18,11 @@ export default function ModalCrearEnvio({ open, onClose, onSubmit }) {
     telefono: "",
     ciudad: "",
   });
+  const [despachos, setDespachos] = useState([]);
+  const [loadingDespachos, setLoadingDespachos] = useState(false);
 
   useEffect(() => {
-    if (!open) {
+    if (open) {
       setForm({
         idDespacho: "",
         nombreDestinatario: "",
@@ -27,8 +30,18 @@ export default function ModalCrearEnvio({ open, onClose, onSubmit }) {
         telefono: "",
         ciudad: "",
       });
+      fetchDespachos();
     }
   }, [open]);
+
+  const fetchDespachos = async () => {
+    setLoadingDespachos(true);
+    try {
+      const data = await obtenerDespachos();
+      setDespachos(data);
+    } catch {}
+    setLoadingDespachos(false);
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -47,15 +60,22 @@ export default function ModalCrearEnvio({ open, onClose, onSubmit }) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div>
-            <label className="block text-sm mb-1">ID Despacho</label>
-            <input
-              type="number"
+            <label className="block text-sm mb-1">Despacho</label>
+            <select
               name="idDespacho"
               value={form.idDespacho}
               onChange={handleChange}
               required
               className="w-full border px-3 py-2 rounded"
-            />
+              disabled={loadingDespachos}
+            >
+              <option value="">Selecciona un despacho</option>
+              {despachos.map((d) => (
+                <option key={d.id} value={d.id}>
+                  #{d.id} - Orden #{d.idOrden} - Estado: {d.estado}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block text-sm mb-1">

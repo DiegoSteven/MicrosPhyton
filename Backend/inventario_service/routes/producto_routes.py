@@ -40,7 +40,6 @@ def obtener(id):
             'nombre': producto.nombre,
             'precio': producto.precio,
             'stock': producto.stock,
-            'image': producto.image,
             'imagen_url': producto.imagen_url
         })
     return jsonify({'error': 'Producto no encontrado'}), 404

@@ -1,34 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 import {
   Home,
   Package,
   ShoppingCart,
   FileText,
-  Settings,
   Menu,
   X,
   User,
-  BarChart3,
   Truck,
-  CreditCard,
+  Box,
+  BarChart3,
+  DollarSign,
 } from "lucide-react";
 import { useCarrito } from "@/contexts/carrito-context";
+import { obtenerPedidos } from "@/app/api/pedidos/pedidos_api";
 
 const navigationItems = [
-  {
+  /*   {
     title: "Inicio",
     href: "/",
     icon: Home,
-  },
+  }, */
   {
     title: "Productos",
     href: "/",
@@ -45,37 +45,19 @@ const navigationItems = [
     icon: FileText,
   },
   {
-    title: "Envios",
-    href: "/envios",
-    icon: FileText,
-  },
-];
-
-const adminItems = [
-  {
-    title: "Dashboard",
-    href: "/admin",
-    icon: BarChart3,
-  },
-  {
-    title: "Gestión Pedidos",
-    href: "/admin",
-    icon: Package,
-  },
-  {
-    title: "Envíos",
-    href: "/admin",
-    icon: Truck,
+    title: "Despachos",
+    href: "/despachos",
+    icon: Box,
   },
   {
     title: "Cobros",
-    href: "/admin",
-    icon: CreditCard,
+    href: "/cobros",
+    icon: DollarSign,
   },
   {
-    title: "Configuración",
-    href: "/admin",
-    icon: Settings,
+    title: "Envios",
+    href: "/envios",
+    icon: Truck,
   },
 ];
 
@@ -83,10 +65,21 @@ export function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
   const { cantidadCarrito } = useCarrito();
+  const [cantidadOrdenes, setCantidadOrdenes] = useState(0);
 
-  // Detectar si estamos en la página de administración
-  const isAdmin = pathname === "/admin";
-  const items = isAdmin ? adminItems : navigationItems;
+  const items = navigationItems;
+
+  useEffect(() => {
+    async function fetchPedidos() {
+      try {
+        const data = await obtenerPedidos();
+        setCantidadOrdenes(Array.isArray(data) ? data.length : 0);
+      } catch {
+        setCantidadOrdenes(0);
+      }
+    }
+    fetchPedidos();
+  }, []);
 
   return (
     <div
@@ -150,23 +143,21 @@ export function Sidebar() {
                         {cantidadCarrito}
                       </Badge>
                     )}
+                  {!isCollapsed &&
+                    item.title === "Mis Pedidos" &&
+                    cantidadOrdenes > 0 && (
+                      <Badge
+                        variant="secondary"
+                        className="ml-auto h-5 w-5 rounded-full p-0 text-xs"
+                      >
+                        {cantidadOrdenes}
+                      </Badge>
+                    )}
                 </Button>
               </Link>
             );
           })}
         </nav>
-
-        {!isCollapsed && (
-          <>
-            <Separator className="my-4" />
-            <div className="px-3 py-2">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <User className="h-4 w-4" />
-                <span>{isAdmin ? "Administrador" : "Usuario"}</span>
-              </div>
-            </div>
-          </>
-        )}
       </ScrollArea>
     </div>
   );
