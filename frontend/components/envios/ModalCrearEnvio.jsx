@@ -45,7 +45,7 @@ export default function ModalCrearEnvio({ open, onClose, onSubmit }) {
       // Filtrar: solo despachos 'Listo para enviar' y que no tengan envío asociado
       const despachosConEnvio = new Set(enviosData.map(e => e.idDespacho));
       const despachosFiltrados = despachosData.filter(
-        d => d.estado === 'Listo para enviar' && !despachosConEnvio.has(d.id)
+        d => d.estado === 'LISTO_PARA_ENVIO' && !despachosConEnvio.has(d.id)
       );
       setDespachos(despachosFiltrados);
     } catch {}

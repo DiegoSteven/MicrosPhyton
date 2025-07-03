@@ -38,20 +38,12 @@ function getEstadoBadge(estado: string) {
 
 // Componente para una fila de pedido con estado de envío
 function PedidoRow({ pedido }: { pedido: any }) {
-  const { envioInfo, loading } = useEnvioEstado(pedido.id);
-
   return (
     <TableRow>
       <TableCell className="font-medium">#{pedido.id}</TableCell>
       <TableCell>{pedido.idCliente}</TableCell>
       <TableCell className="font-medium">${pedido.total.toLocaleString()}</TableCell>
       <TableCell>{getEstadoBadge(pedido.estado)}</TableCell>
-      <TableCell>
-        <EstadoEnvioBadge 
-          estado={envioInfo?.estado || 'Sin despacho'} 
-          loading={loading} 
-        />
-      </TableCell>
       <TableCell className="flex gap-2">
         <PedidoDetalleDialog pedido={pedido} />
         <PedidoSeguimientoDialog pedido={pedido} />
@@ -89,7 +81,6 @@ export default function PedidoLista({ pedidos, onRefresh, refreshing = false }: 
               <TableHead>Cliente</TableHead>
               <TableHead>Total</TableHead>
               <TableHead>Estado</TableHead>
-              <TableHead>Estado Envío</TableHead>
               <TableHead>Acciones</TableHead>
             </TableRow>
           </TableHeader>
