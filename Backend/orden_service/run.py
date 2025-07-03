@@ -3,6 +3,10 @@ from models import db
 from events.listener import iniciar_listener
 import threading
 
+import logging  
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 app = create_app()
 
 with app.app_context():

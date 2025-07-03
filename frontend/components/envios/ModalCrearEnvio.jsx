@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { obtenerDespachos } from "@/app/api/despachos/despachos_api";
+import { listarEnvios } from "@/app/api/envios/envios_api";
 
 export default function ModalCrearEnvio({ open, onClose, onSubmit }) {
   const [form, setForm] = useState({
@@ -37,8 +38,16 @@ export default function ModalCrearEnvio({ open, onClose, onSubmit }) {
   const fetchDespachos = async () => {
     setLoadingDespachos(true);
     try {
-      const data = await obtenerDespachos();
-      setDespachos(data);
+      const [despachosData, enviosData] = await Promise.all([
+        obtenerDespachos(),
+        listarEnvios(),
+      ]);
+      // Filtrar: solo despachos 'Listo para enviar' y que no tengan envío asociado
+      const despachosConEnvio = new Set(enviosData.map(e => e.idDespacho));
+      const despachosFiltrados = despachosData.filter(
+        d => d.estado === 'Listo para enviar' && !despachosConEnvio.has(d.id)
+      );
+      setDespachos(despachosFiltrados);
     } catch {}
     setLoadingDespachos(false);
   };

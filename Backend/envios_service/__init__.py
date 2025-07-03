@@ -8,7 +8,7 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object('config.Config')
 
-    CORS(app, origins=["*"])  # o ["*"] en desarrollo
+    CORS(app, origins=["*"]) 
     db.init_app(app)
 
     app.register_blueprint(envio_bp)

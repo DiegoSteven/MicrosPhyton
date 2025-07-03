@@ -35,7 +35,7 @@ export default function ProductoLineaDetalle({ linea }: { linea: LineaProducto }
             className="h-14 w-14 rounded object-cover border"
           />
         ) : (
-          <Package className="h-7 w-7 text-blue-500" />
+          <Package className="h-7 w-7 text-black-500" />
         )}
         <div>
           <div className="font-semibold text-gray-900">
@@ -58,7 +58,7 @@ export default function ProductoLineaDetalle({ linea }: { linea: LineaProducto }
             ${linea.precioUnitario.toLocaleString()}
           </span>
         </div>
-        <div className="text-lg font-bold text-blue-700">
+        <div className="text-lg font-bold text-black">
           Subtotal: {(linea.precioUnitario * linea.cantidad).toLocaleString()}
         </div>
       </div>

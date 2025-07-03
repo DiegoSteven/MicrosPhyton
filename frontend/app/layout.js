@@ -6,8 +6,8 @@ import { Sidebar } from "@/components/sidebar"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "DistribuMax - Distribuidora de Productos",
-  description: "Sistema de ecommerce para distribuidora de productos de consumo masivo",
+  title: "Tienda Yayito - Comercio Electrónico",
+  description: "Tienda en línea",
     generator: 'v0.dev'
 }
 
@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
     <html lang="es">
       <body className={inter.className}>
         <CarritoProvider>
-          <div className="flex h-screen bg-gray-50">
+          <div className="flex h-screen bg-white">
             <Sidebar />
             <main className="flex-1 overflow-auto">
               {children}

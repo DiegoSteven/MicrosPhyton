@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   listarEnvios,
   crearEnvio,
@@ -19,117 +19,211 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Truck, CheckCircle, XCircle, Clock, Eye } from "lucide-react";
+import { Truck, CheckCircle, XCircle, Clock, Eye, RefreshCw, Wifi, Plus } from "lucide-react";
 import ModalCrearEnvio from "@/components/envios/ModalCrearEnvio";
 import { ArrowRight, Undo2, Ban, Trash2 } from "lucide-react";
 
+// Función para obtener el estilo del badge según el estado
+function getEstadoBadge(estado) {
+  switch (estado) {
+    case 'EnTransito':
+      return <Badge variant="default" className="bg-orange-100 text-orange-800">En Tránsito</Badge>;
+    case 'Entregado':
+      return <Badge variant="default" className="bg-green-100 text-green-800">Entregado</Badge>;
+    case 'Devuelto':
+      return <Badge variant="default" className="bg-blue-100 text-blue-800">Devuelto</Badge>;
+    case 'Cancelado':
+      return <Badge variant="destructive">Cancelado</Badge>;
+    default:
+      return <Badge variant="outline">{estado}</Badge>;
+  }
+}
 
-const estadoColors = {
-  EnTransito: "bg-orange-100 text-orange-800",
-  Entregado: "bg-green-100 text-green-800",
-  Devuelto: "bg-blue-100 text-blue-800",
-  Cancelado: "bg-red-100 text-red-800",
-};
-
-const estadoIcons = {
-  EnTransito: Truck,
-  Entregado: CheckCircle,
-  Devuelto: CheckCircle,
-  Cancelado: XCircle,
-};
+// Función para obtener el icono según el estado
+function getEstadoIcon(estado) {
+  switch (estado) {
+    case 'EnTransito':
+      return Truck;
+    case 'Entregado':
+      return CheckCircle;
+    case 'Devuelto':
+      return Undo2;
+    case 'Cancelado':
+      return XCircle;
+    default:
+      return Clock;
+  }
+}
 
 export default function EnviosPage() {
   const [envios, setEnvios] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [mensaje, setMensaje] = useState("");
+  const [lastUpdate, setLastUpdate] = useState(null);
 
-  const cargarEnvios = async () => {
-    setLoading(true);
+  const cargarEnvios = useCallback(async (isAutoRefresh = false) => {
     try {
+      if (!isAutoRefresh) {
+        setError("");
+      }
       const data = await listarEnvios();
       setEnvios(data);
+      setLastUpdate(new Date());
     } catch (e) {
-      setError("Error al cargar los envíos");
+      if (!isAutoRefresh) {
+        setError("Error al cargar los envíos");
+        console.error("Error al cargar envíos:", e);
+      }
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
-    setLoading(false);
+  }, []);
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    cargarEnvios(false);
   };
 
   useEffect(() => {
-    cargarEnvios();
-  }, []);
+    cargarEnvios(false);
+  }, [cargarEnvios]);
+
+  // Actualización automática cada 30 segundos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!loading && !refreshing) {
+        cargarEnvios(true);
+      }
+    }, 30000); // 30 segundos
+
+    return () => clearInterval(interval);
+  }, [cargarEnvios, loading, refreshing]);
 
   const handleCrear = async (nuevoEnvio) => {
     try {
       await crearEnvio(nuevoEnvio);
-      setMensaje("✅ Envío creado");
+      setMensaje("✅ Envío creado exitosamente");
       setModalOpen(false);
-      cargarEnvios();
+      cargarEnvios(false);
     } catch (e) {
-      setMensaje("Error al crear el envío");
+      setMensaje("❌ Error al crear el envío");
+      console.error("Error al crear envío:", e);
     }
   };
 
   const handleEliminar = async (id) => {
-    if (!window.confirm("¿Eliminar este envío?")) return;
+    if (!window.confirm("¿Estás seguro de que quieres eliminar este envío?")) return;
     try {
       await eliminarEnvio(id);
-      setMensaje("🚫 Envío eliminado");
-      cargarEnvios();
+      setMensaje("🚫 Envío eliminado exitosamente");
+      cargarEnvios(false);
     } catch (e) {
-      setMensaje("Error al eliminar");
+      setMensaje("❌ Error al eliminar el envío");
+      console.error("Error al eliminar envío:", e);
     }
   };
 
   const handleAvanzar = async (id) => {
     try {
       await avanzarEstadoEnvio(id);
-      setMensaje("✅ Estado avanzado");
-      cargarEnvios();
+      setMensaje("✅ Estado avanzado exitosamente");
+      cargarEnvios(false);
     } catch (e) {
-      setMensaje("No se pudo avanzar el estado");
+      setMensaje("❌ No se pudo avanzar el estado");
+      console.error("Error al avanzar estado:", e);
     }
   };
 
   const handleDevolver = async (id) => {
     try {
       await devolverEnvio(id);
-      setMensaje("🔄 Envío devuelto");
-      cargarEnvios();
+      setMensaje("🔄 Envío devuelto exitosamente");
+      cargarEnvios(false);
     } catch (e) {
-      setMensaje("No se pudo devolver");
+      setMensaje("❌ No se pudo devolver el envío");
+      console.error("Error al devolver envío:", e);
     }
   };
 
   const handleCancelar = async (id) => {
     try {
       await cancelarEnvio(id);
-      setMensaje("❌ Envío cancelado");
-      cargarEnvios();
+      setMensaje("❌ Envío cancelado exitosamente");
+      cargarEnvios(false);
     } catch (e) {
-      setMensaje("No se pudo cancelar");
+      setMensaje("❌ No se pudo cancelar el envío");
+      console.error("Error al cancelar envío:", e);
     }
   };
 
   return (
     <div className="p-6 space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-light text-gray-900">Envíos</h1>
-        <p className="text-gray-600">
-          Gestiona y revisa el estado de tus envíos
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-light text-gray-900">Envíos</h1>
+            <p className="text-gray-600">
+              Gestiona y revisa el estado de tus envíos
+            </p>
+          </div>
+         
+        </div>
       </div>
-      <Button onClick={() => setModalOpen(true)} className="mb-4">
-        + Nuevo Envío
-      </Button>
+
+      <div className="flex items-center gap-4">
+        <Button onClick={() => setModalOpen(true)} className="flex items-center gap-2">
+          <Plus className="h-4 w-4" />
+          Nuevo Envío
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="flex items-center gap-2"
+        >
+          <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+          {refreshing ? 'Actualizando...' : 'Actualizar'}
+        </Button>
+      </div>
+
       {mensaje && (
-        <div className="mb-3 text-green-700 font-medium">{mensaje}</div>
+        <div className={`p-3 rounded-md font-medium ${
+          mensaje.includes('✅') || mensaje.includes('🔄') 
+            ? 'bg-green-100 text-green-800' 
+            : 'bg-red-100 text-red-800'
+        }`}>
+          {mensaje}
+        </div>
       )}
+
       {loading ? (
-        <div>Cargando...</div>
+        <Card className="border-gray-100 bg-white">
+          <CardContent className="text-center p-12">
+            <div className="text-gray-400 mb-4">
+              <Truck className="h-16 w-16 mx-auto animate-pulse" />
+            </div>
+            <h2 className="text-xl font-medium text-gray-900 mb-2">
+              Cargando envíos...
+            </h2>
+          </CardContent>
+        </Card>
       ) : error ? (
-        <div className="text-red-600">{error}</div>
+        <Card className="border-gray-100 bg-white">
+          <CardContent className="text-center p-12">
+            <div className="text-gray-400 mb-4">
+              <XCircle className="h-16 w-16 mx-auto" />
+            </div>
+            <h2 className="text-xl font-medium text-gray-900 mb-4">{error}</h2>
+            <Button onClick={handleRefresh} className="bg-black text-white px-4 py-2 rounded hover:bg-black">
+              Reintentar
+            </Button>
+          </CardContent>
+        </Card>
       ) : envios.length === 0 ? (
         <Card className="border-gray-100 bg-white">
           <CardContent className="text-center p-12">
@@ -142,12 +236,15 @@ export default function EnviosPage() {
             <p className="text-gray-600 mb-6">
               Crea tu primer envío para verlo aquí
             </p>
+            <Button onClick={() => setModalOpen(true)} className="bg-black text-white px-4 py-2 rounded hover:bg-black">
+              Crear Envío
+            </Button>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-4">
           {envios.map((envio) => {
-            const EstadoIcon = estadoIcons[envio.estado] || Clock;
+            const EstadoIcon = getEstadoIcon(envio.estado);
             return (
               <Card
                 key={envio.id}
@@ -160,10 +257,10 @@ export default function EnviosPage() {
                         <span className="text-lg font-medium">
                           Envío #{envio.id}
                         </span>
-                        <Badge className={estadoColors[envio.estado]}>
-                          <EstadoIcon className="h-4 w-4 mr-1 inline" />
-                          {envio.estado}
-                        </Badge>
+                        <div className="flex items-center gap-2">
+                          <EstadoIcon className="h-4 w-4 text-gray-500" />
+                          {getEstadoBadge(envio.estado)}
+                        </div>
                       </CardTitle>
 
                       <div className="text-sm text-gray-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
@@ -193,7 +290,8 @@ export default function EnviosPage() {
                           size="icon"
                           variant="outline"
                           onClick={() => handleAvanzar(envio.id)}
-                          title="Avanzar"
+                          title="Avanzar Estado"
+                          disabled={envio.estado === 'Cancelado'}
                         >
                           <ArrowRight className="h-4 w-4" />
                         </Button>
@@ -202,6 +300,7 @@ export default function EnviosPage() {
                           variant="outline"
                           onClick={() => handleDevolver(envio.id)}
                           title="Devolver"
+                          disabled={envio.estado !== 'Entregado'}
                         >
                           <Undo2 className="h-4 w-4" />
                         </Button>
@@ -210,6 +309,7 @@ export default function EnviosPage() {
                           variant="outline"
                           onClick={() => handleCancelar(envio.id)}
                           title="Cancelar"
+                          disabled={['Entregado', 'Devuelto', 'Cancelado'].includes(envio.estado)}
                         >
                           <Ban className="h-4 w-4" />
                         </Button>
@@ -255,7 +355,7 @@ export default function EnviosPage() {
                               <strong>Ciudad:</strong> {envio.ciudad}
                             </div>
                             <div>
-                              <strong>Estado:</strong> {envio.estado}
+                              <strong>Estado:</strong> {getEstadoBadge(envio.estado)}
                             </div>
                           </div>
                         </DialogContent>

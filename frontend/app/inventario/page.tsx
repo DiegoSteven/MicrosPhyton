@@ -63,29 +63,30 @@ export default function InventarioPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-8 space-y-8 bg-white">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-light text-gray-900">Inventario</h1>
-          <p className="text-gray-600">Gestiona tu stock de productos</p>
+          <h1 className="text-4xl font-light text-black mb-2">Productos</h1>
+          <p className="text-black/60 font-light">Catálogo de productos disponibles</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button className="bg-black hover:bg-black/90 text-white font-medium px-6 py-2 transition-all duration-200">
               + Agregar producto
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
+          <DialogContent className="sm:max-w-md bg-white border border-black/10">
             <DialogHeader>
-              <DialogTitle>Nuevo producto</DialogTitle>
+              <DialogTitle className="text-black font-medium">Nuevo producto</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <Input
                 name="nombre"
-                placeholder="Nombre"
+                placeholder="Nombre del producto"
                 value={form.nombre}
                 onChange={handleInput}
                 autoFocus
+                className="input-minimal"
               />
               <Input
                 name="precio"
@@ -95,25 +96,28 @@ export default function InventarioPage() {
                 step="0.01"
                 value={form.precio}
                 onChange={handleInput}
+                className="input-minimal"
               />
               <Input
                 name="stock"
-                placeholder="Stock"
+                placeholder="Stock disponible"
                 type="number"
                 min="0"
                 value={form.stock}
                 onChange={handleInput}
+                className="input-minimal"
               />
               <Input
                 name="imagen_url"
-                placeholder="URL de imagen"
+                placeholder="URL de imagen (opcional)"
                 value={form.imagen_url}
                 onChange={handleInput}
+                className="input-minimal"
               />
 
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-              <Button type="submit" className="w-full bg-blue-600 text-white">
-                Guardar
+              {error && <p className="text-red-600 text-sm font-medium">{error}</p>}
+              <Button type="submit" className="w-full bg-black hover:bg-black/90 text-white font-medium transition-all duration-200">
+                Guardar producto
               </Button>
             </form>
           </DialogContent>

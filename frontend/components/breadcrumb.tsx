@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { ChevronRight, Home } from "lucide-react"
 
-const breadcrumbMap = {
+const breadcrumbMap: Record<string, string> = {
   "/": "Inicio",
   "/carrito": "Carrito",
   "/pedidos": "Mis Pedidos",
@@ -34,16 +34,16 @@ export function Breadcrumb() {
   if (breadcrumbs.length <= 1) return null
 
   return (
-    <nav className="flex items-center space-x-1 text-sm text-gray-600 mb-4">
+    <nav className="flex items-center space-x-1 text-sm text-black/60 mb-4 font-light">
       {breadcrumbs.map((breadcrumb, index) => (
         <div key={breadcrumb.path} className="flex items-center">
-          {index > 0 && <ChevronRight className="h-4 w-4 mx-1" />}
+          {index > 0 && <ChevronRight className="h-4 w-4 mx-1 text-black/40" />}
           {index === breadcrumbs.length - 1 ? (
-            <span className="text-gray-900 font-medium">{breadcrumb.label}</span>
+            <span className="text-black font-medium">{breadcrumb.label}</span>
           ) : (
             <Link
               href={breadcrumb.path}
-              className="hover:text-blue-600 transition-colors flex items-center"
+              className="hover:text-black transition-colors flex items-center"
             >
               {index === 0 ? (
                 <Home className="h-4 w-4" />

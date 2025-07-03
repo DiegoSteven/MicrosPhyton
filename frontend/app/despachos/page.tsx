@@ -45,7 +45,8 @@ const ESTADO_COLORS: Record<string, string> = {
 
 export default function DespachosPage() {
   const [despachos, setDespachos] = useState<Despacho[]>([]);
-  const [pedidos, setPedidos] = useState([]);
+  type Pedido = { id: number; idCliente: number; total: number };
+  const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -116,7 +117,7 @@ export default function DespachosPage() {
     <div className="p-6 space-y-6">
       <Card className="shadow-md">
         <CardHeader>
-          <CardTitle className="text-xl text-blue-800 flex items-center gap-2">
+          <CardTitle className="text-xl text-black flex items-center gap-2">
             <Box className="h-5 w-5" />
             Gestión de Despachos
           </CardTitle>
@@ -181,7 +182,7 @@ export default function DespachosPage() {
               <button
                 type="submit"
                 disabled={creando || !idOrden}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow w-full transition disabled:opacity-50"
+                className="bg-black hover:bg-black text-white px-4 py-2 rounded shadow w-full transition disabled:opacity-50"
               >
                 {creando ? "Creando..." : "Crear despacho"}
               </button>
@@ -217,24 +218,28 @@ export default function DespachosPage() {
                       </TableCell>
                       <TableCell>{d.observaciones || "-"}</TableCell>
                       <TableCell className="flex flex-wrap gap-2">
-                        <button
-                          onClick={() => handleAvanzar(d.id)}
-                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded transition text-sm"
-                          disabled={d.estado === "LISTO_PARA_ENVIO" || d.estado === "FALLIDO"}
-                          title="Avanzar"
-                        >
-                          <Check className="inline-block w-4 h-4 mr-1" />
-                          Avanzar
-                        </button>
-                        <button
-                          onClick={() => handleFallar(d.id)}
-                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded transition text-sm"
-                          disabled={d.estado === "FALLIDO" || d.estado === "LISTO_PARA_ENVIO"}
-                          title="Fallar"
-                        >
-                          <AlertTriangle className="inline-block w-4 h-4 mr-1" />
-                          Fallar
-                        </button>
+                        {d.estado !== "LISTO_PARA_ENVIO" && (
+                          <button
+                            onClick={() => handleAvanzar(d.id)}
+                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded transition text-sm"
+                            disabled={d.estado === "FALLIDO"}
+                            title="Avanzar"
+                          >
+                            <Check className="inline-block w-4 h-4 mr-1" />
+                            Avanzar
+                          </button>
+                        )}
+                        {d.estado !== "LISTO_PARA_ENVIO" && (
+                          <button
+                            onClick={() => handleFallar(d.id)}
+                            className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded transition text-sm"
+                            disabled={d.estado === "FALLIDO"}
+                            title="Fallar"
+                          >
+                            <AlertTriangle className="inline-block w-4 h-4 mr-1" />
+                            Fallar
+                          </button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}

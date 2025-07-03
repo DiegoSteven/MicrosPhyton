@@ -84,28 +84,28 @@ export function Sidebar() {
   return (
     <div
       className={cn(
-        "flex flex-col bg-white border-r border-gray-100 transition-all duration-300 ease-in-out",
+        "flex flex-col bg-white border-r border-black/10 transition-all duration-300 ease-in-out",
         isCollapsed ? "w-16" : "w-64"
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100">
+      <div className="flex items-center justify-between p-4 border-b border-black/10">
         {!isCollapsed && (
           <div className="flex items-center space-x-2">
-            <Package className="h-6 w-6 text-blue-600" />
-            <span className="font-semibold text-gray-900">DistribuMax</span>
+            <Package className="h-6 w-6 text-black" />
+            <span className="font-bold text-black text-lg">Tienda Yayito</span>
           </div>
         )}
         <Button
           variant="ghost"
           size="sm"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="h-8 w-8 p-0"
+          className="h-8 w-8 p-0 hover:bg-black/5"
         >
           {isCollapsed ? (
-            <Menu className="h-4 w-4" />
+            <Menu className="h-4 w-4 text-black" />
           ) : (
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4 text-black" />
           )}
         </Button>
       </div>
@@ -122,8 +122,10 @@ export function Sidebar() {
                 <Button
                   variant={isActive ? "default" : "ghost"}
                   className={cn(
-                    "w-full justify-start h-10 px-3",
-                    isActive && "bg-blue-50 text-blue-700 border-blue-200",
+                    "w-full justify-start h-10 px-3 transition-all duration-200",
+                    isActive 
+                      ? "bg-black text-white hover:bg-black/90" 
+                      : "text-black hover:bg-black/5",
                     isCollapsed && "justify-center px-2"
                   )}
                 >
@@ -131,14 +133,14 @@ export function Sidebar() {
                     className={cn("h-4 w-4", isCollapsed ? "mr-0" : "mr-3")}
                   />
                   {!isCollapsed && (
-                    <span className="flex-1 text-left">{item.title}</span>
+                    <span className="flex-1 text-left font-medium">{item.title}</span>
                   )}
                   {!isCollapsed &&
                     item.title === "Carrito" &&
                     cantidadCarrito > 0 && (
                       <Badge
                         variant="secondary"
-                        className="ml-auto h-5 w-5 rounded-full p-0 text-xs"
+                        className="ml-auto h-5 w-5 rounded-full p-0 text-xs bg-black text-white"
                       >
                         {cantidadCarrito}
                       </Badge>
@@ -148,7 +150,7 @@ export function Sidebar() {
                     cantidadOrdenes > 0 && (
                       <Badge
                         variant="secondary"
-                        className="ml-auto h-5 w-5 rounded-full p-0 text-xs"
+                        className="ml-auto h-5 w-5 rounded-full p-0 text-xs bg-black text-white"
                       >
                         {cantidadOrdenes}
                       </Badge>
